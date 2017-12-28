@@ -4,7 +4,8 @@
   "description": "Client for NHL Stats API",
   "main": "build/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "./node_modules/.bin/tsc"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/andrewlively/nhlapi/issues"
   },
-  "homepage": "https://github.com/andrewlively/nhlapi#readme"
+  "homepage": "https://github.com/andrewlively/nhlapi#readme",
+  "devDependencies": {
+    "@types/node": "^8.5.2",
+    "typescript": "^2.6.2"
+  }
 }
