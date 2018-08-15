@@ -1,10 +1,10 @@
-import { EventEmitter } from "events";
+import { BehaviorSubject, Observable } from "rxjs";
 import { clearInterval, setInterval } from "timers";
 import { HttpClient } from "../../utils/HttpClient";
 
 export class Game {
   private id: number;
-  private eventEmitter: EventEmitter;
+  private gameEvents$: BehaviorSubject<any>
   private client: HttpClient;
   private timer: NodeJS.Timer;
   private refreshRate: number;
@@ -12,7 +12,6 @@ export class Game {
 
   constructor(id: number) {
     this.id = id;
-    this.eventEmitter = new EventEmitter();
     this.client = new HttpClient();
     this.refreshRate = 10000; // Default 10 sec since not sure of API rate limit
   }
@@ -27,10 +26,12 @@ export class Game {
       });
   }
 
-  public watch(): EventEmitter {
+  public watch(): Observable<any> {
     setInterval(this.refreshGamefeed, this.refreshRate);
 
-    return this.eventEmitter;
+    this.gameEvents$ = new BehaviorSubject<any>(null);
+
+    return this.gameEvents$.asObservable();
   }
 
   public stopWatch() {
@@ -38,26 +39,21 @@ export class Game {
   }
 
   private async refreshGamefeed() {
-    try {
-      const game = await this.getInfo();
+    const game = await this.getInfo();
 
-      const scoringPlays: number[] = game.liveData.scoringPlays;
+    const scoringPlays: number[] = game.liveData.scoringPlays;
 
-      // Goals
-      if (
-        game.liveData.scoringPlays.length &&
-        this.lastScoringPlay !== scoringPlays[scoringPlays.length - 1]
-      ) {
-        this.lastScoringPlay = scoringPlays[scoringPlays.length - 1];
+    if (
+      game.liveData.scoringPlays.length &&
+      this.lastScoringPlay !== scoringPlays[scoringPlays.length - 1]
+    ) {
+      this.lastScoringPlay = scoringPlays[scoringPlays.length - 1];
 
-        const data = game.liveData.plays.allPlays.find(
-          (p: any) => p.about.eventIdx === this.lastScoringPlay
-        );
+      const data = game.liveData.plays.allPlays.find(
+        (p: any) => p.about.eventIdx === this.lastScoringPlay
+      );
 
-        this.eventEmitter.emit("goal", data);
-      }
-    } catch (err) {
-      this.eventEmitter.emit("error", err);
+      this.gameEvents$.next(data);
     }
   }
 }
