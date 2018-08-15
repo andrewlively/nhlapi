@@ -4,7 +4,7 @@
   "description": "Client for NHL Stats API",
   "main": "build/index.js",
   "scripts": {
-    "test": "npm run lint && jest",
+    "test": "npm run lint && npm run compile && jest",
     "start": "node build/index.js",
     "compile": "./node_modules/.bin/tsc",
     "lint": "./node_modules/.bin/tslint -c tslint.json 'src/**/*.ts'",
