@@ -1,4 +1,12 @@
+import { CONFERENCES, DIVISONS, League } from "./libs/League";
 import { Player } from "./libs/Player";
-import { Team } from "./libs/Team";
+import { Team, TEAMS } from "./libs/Team";
 
-export { Team, Player };
+export {
+  TEAMS,
+  CONFERENCES,
+  DIVISONS,
+  League,
+  Team,
+  Player
+};

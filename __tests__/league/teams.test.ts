@@ -1,5 +1,4 @@
-import { League } from '../../src/libs/League';
-import { TEAMS } from "../../src/libs/Team";
+import { League, TEAMS } from "../../src";
 
 test("League | Teams | Get all teams", async () => {
   const teams = await new League().getTeams();

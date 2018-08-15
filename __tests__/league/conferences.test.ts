@@ -1,4 +1,4 @@
-import { CONFERENCES, League } from '../../src/libs/League';
+import { CONFERENCES, League } from "../../src";
 
 test("League | Conferences | Get all conferences", async () => {
   const conferences = await new League().getConferences();

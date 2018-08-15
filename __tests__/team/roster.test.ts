@@ -1,4 +1,4 @@
-import { Team, TEAMS } from "../../src/libs/Team";
+import { Team, TEAMS } from "../../src";
 
 test("Team | Roster | Get CBJ Roster", async () => {
   const cbj = new Team(TEAMS.COLUMBUS_BLUE_JACKETS);

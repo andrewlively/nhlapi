@@ -1,4 +1,4 @@
-import { League } from '../../src/libs/League';
+import { League } from "../../src";
 
 test("League | Standings | Get latest", async () => {
   const standings = await new League().getStandings();
