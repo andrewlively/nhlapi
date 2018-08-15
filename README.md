@@ -21,3 +21,5 @@ const schedule = await blueJackets.schedule({
 
 // ...
 ```
+
+Thanks to @dword4 for helping document the [available endpoints](https://gitlab.com/dword4/nhlapi)!
