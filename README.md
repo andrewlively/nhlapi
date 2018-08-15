@@ -2,6 +2,8 @@
 
 Client for NHL Stats API
 
+[![Build Status](https://travis-ci.com/andrewlively/nhlapi.svg?branch=master)](https://travis-ci.com/andrewlively/nhlapi)
+
 ## Example
 
 ```js
