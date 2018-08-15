@@ -1,45 +1,46 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const HttpClient_1 = require("../../utils/HttpClient");
 const events_1 = require("events");
 const timers_1 = require("timers");
+const HttpClient_1 = require("../../utils/HttpClient");
 class Game {
-    constructor(id) {
-        this._id = id;
-        this._eventEmitter = new events_1.EventEmitter();
-        this._client = new HttpClient_1.default();
-        this._refreshRate = 10000;
+  constructor(id) {
+    this.id = id;
+    this.eventEmitter = new events_1.EventEmitter();
+    this.client = new HttpClient_1.HttpClient();
+    this.refreshRate = 10000;
+  }
+  getInfo() {
+    return this.client.get(`/game/${this.id}/feed/live`).then(response => {
+      const { gameData, liveData } = response;
+      return { gameData, liveData };
+    });
+  }
+  watch() {
+    timers_1.setInterval(this.refreshGamefeed, this.refreshRate);
+    return this.eventEmitter;
+  }
+  stopWatch() {
+    timers_1.clearInterval(this.timer);
+  }
+  async refreshGamefeed() {
+    try {
+      const game = await this.getInfo();
+      const scoringPlays = game.liveData.scoringPlays;
+      if (
+        game.liveData.scoringPlays.length &&
+        this.lastScoringPlay !== scoringPlays[scoringPlays.length - 1]
+      ) {
+        this.lastScoringPlay = scoringPlays[scoringPlays.length - 1];
+        const data = game.liveData.plays.allPlays.find(
+          p => p.about.eventIdx === this.lastScoringPlay
+        );
+        this.eventEmitter.emit("goal", data);
+      }
+    } catch (err) {
+      this.eventEmitter.emit("error", err);
     }
-    getInfo() {
-        return this._client
-            .get(`/game/${this._id}/feed/live`)
-            .then((response) => {
-            const { gameData, liveData } = response;
-            return { gameData, liveData };
-        });
-    }
-    watch() {
-        timers_1.setInterval(this.refreshGamefeed, this._refreshRate);
-        return this._eventEmitter;
-    }
-    stopWatch() {
-        timers_1.clearInterval(this._timer);
-    }
-    async refreshGamefeed() {
-        try {
-            const game = await this.getInfo();
-            const scoringPlays = game.liveData.scoringPlays;
-            if (game.liveData.scoringPlays.length &&
-                this._lastScoringPlay !== scoringPlays[scoringPlays.length - 1]) {
-                this._lastScoringPlay = scoringPlays[scoringPlays.length - 1];
-                const data = game.liveData.plays.allPlays.find((p) => p.about.eventIdx === this._lastScoringPlay);
-                this._eventEmitter.emit("goal", data);
-            }
-        }
-        catch (err) {
-            this._eventEmitter.emit("error", err);
-        }
-    }
+  }
 }
-exports.default = Game;
+exports.Game = Game;
 //# sourceMappingURL=index.js.map

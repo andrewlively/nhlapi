@@ -4,8 +4,11 @@
   "description": "Client for NHL Stats API",
   "main": "build/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "compile": "./node_modules/.bin/tsc"
+    "test": "npm run lint && jest",
+    "start": "node build/index.js",
+    "compile": "./node_modules/.bin/tsc",
+    "lint": "./node_modules/.bin/tslint -c tslint.json 'src/**/*.ts'",
+    "precommit": "lint-staged"
   },
   "repository": {
     "type": "git",
@@ -16,9 +19,39 @@
   "bugs": {
     "url": "https://github.com/andrewlively/nhlapi/issues"
   },
+  "lint-staged": {
+    "*.{js,json,css,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
   "homepage": "https://github.com/andrewlively/nhlapi#readme",
   "devDependencies": {
+    "@types/got": "^8.3.3",
+    "@types/jest": "^23.3.1",
     "@types/node": "^8.5.2",
-    "typescript": "^2.6.2"
+    "husky": "^0.14.3",
+    "jest": "^23.5.0",
+    "lint-staged": "^7.2.2",
+    "prettier": "^1.14.2",
+    "ts-jest": "^23.1.3",
+    "tslint": "^5.11.0",
+    "tslint-config-prettier": "^1.14.0",
+    "tslint-microsoft-contrib": "^5.2.0",
+    "typescript": "^2.9.2"
+  },
+  "dependencies": {
+    "date-fns": "^1.29.0",
+    "got": "^9.0.0"
+  },
+  "jest": {
+    "transform": {
+      ".(ts|tsx)": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|js)$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ]
   }
 }
