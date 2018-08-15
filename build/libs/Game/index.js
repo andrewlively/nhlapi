@@ -1,12 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const events_1 = require("events");
+const rxjs_1 = require("rxjs");
 const timers_1 = require("timers");
 const HttpClient_1 = require("../../utils/HttpClient");
 class Game {
   constructor(id) {
     this.id = id;
-    this.eventEmitter = new events_1.EventEmitter();
     this.client = new HttpClient_1.HttpClient();
     this.refreshRate = 10000;
   }
@@ -18,27 +17,24 @@ class Game {
   }
   watch() {
     timers_1.setInterval(this.refreshGamefeed, this.refreshRate);
-    return this.eventEmitter;
+    this.gameEvents$ = new rxjs_1.BehaviorSubject(null);
+    return this.gameEvents$.asObservable();
   }
   stopWatch() {
     timers_1.clearInterval(this.timer);
   }
   async refreshGamefeed() {
-    try {
-      const game = await this.getInfo();
-      const scoringPlays = game.liveData.scoringPlays;
-      if (
-        game.liveData.scoringPlays.length &&
-        this.lastScoringPlay !== scoringPlays[scoringPlays.length - 1]
-      ) {
-        this.lastScoringPlay = scoringPlays[scoringPlays.length - 1];
-        const data = game.liveData.plays.allPlays.find(
-          p => p.about.eventIdx === this.lastScoringPlay
-        );
-        this.eventEmitter.emit("goal", data);
-      }
-    } catch (err) {
-      this.eventEmitter.emit("error", err);
+    const game = await this.getInfo();
+    const scoringPlays = game.liveData.scoringPlays;
+    if (
+      game.liveData.scoringPlays.length &&
+      this.lastScoringPlay !== scoringPlays[scoringPlays.length - 1]
+    ) {
+      this.lastScoringPlay = scoringPlays[scoringPlays.length - 1];
+      const data = game.liveData.plays.allPlays.find(
+        p => p.about.eventIdx === this.lastScoringPlay
+      );
+      this.gameEvents$.next(data);
     }
   }
 }
